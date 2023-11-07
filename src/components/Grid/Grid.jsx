@@ -32,9 +32,15 @@ function Grid({numberOfCards}){
 const [turn,setTurn]=useState(true);  //true-O  false-X
 const [board,setBoard]=useState(Array(numberOfCards).fill(""));
 const [winner ,setWinner]=useState(null);
-    function play(index){
 
-        console.log("clicked",index);
+
+function isBoardFull(board) {
+    return board.every((cell) => cell !== "");
+  }
+
+  function play(index) {
+     
+    console.log("clicked",index);
         if(turn==true){
             board[index]="O"
         }
@@ -42,29 +48,28 @@ const [winner ,setWinner]=useState(null);
             board[index]="X"
         }
 
-        const win=isWinner(board,turn ? "O" : "X");
-        console.log("Winner is ",win);
+      const win = isWinner(board, turn ? "O" : "X");
 
-            if(win){
-            setWinner(win);
-            toast.success(`Winner is ${win}`)
-        }
-          
-        if (win === "" && board.every((cell) => cell !== "")) {
-            // All cells are filled, and there is no winner
-            toast.info("It's a draw! No winner.");
-          }
-
-        setBoard([...board]);
+      if (win) {
+        setWinner(win);
+        toast.success(`Winner is ${win}`);
+      } else if (isBoardFull(board)) {
+        setWinner("Draw");
+        toast.info("It's a draw!");
+      } else {
         setTurn(!turn);
-
+      }
     }
+  
+
+
 function reset(){
     setBoard(Array(numberOfCards).fill(""));
     setWinner(null);
     setTurn(true);
     
 }
+
 
 return(
 
@@ -77,15 +82,13 @@ return(
             </>
         )}
 
-{!winner && (
-            <>
-            <button className="reset" onClick={reset}>Click to reset game</button>
-            <ToastContainer position="top-center" theme="dark" />
-            </>
-        )}
 
         <h1 className="turn">Current turn : {(turn) ? 'O' : 'X'}</h1>
 
+
+        {winner === "Draw" && (
+        <div className="draw-message">It's a draw!</div>
+      )}
         <div className="grid">
         
         
@@ -98,9 +101,11 @@ return(
         </div>
     </div>
 
+
 )
 
-
 }
+
+
 
 export default Grid;
